@@ -1,0 +1,91 @@
+version: '2.2'
+services:
+
+  nextgen-postgres: #name of the second service
+    image: nextgen.db/postgres:1.0.0
+    container_name: postgres_nextgen
+    restart: always
+#    volumes:
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/postgres-data:/var/lib/postgresql/data:rw
+    environment:
+     - POSTGRES_PASSWORD=P@ssword1
+    ports:
+      - "5432:5432" #specify ports forewarding
+    mem_limit: 1g
+    mem_reservation: 512m
+    cpus: 1.5
+    networks:
+      microservice_network:
+        aliases:
+          - postgres-server
+
+  nextgen-eureka:
+    image: 'nextgen.eureka/nextgen-eureka:1.0.0'
+    restart: always
+#    volumes:
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/logs:/logs:rw
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/content:/opt/heritage-supporting-docs:rw
+    ports:
+      # both ports must match the port from external_url above
+      - "8761:8761"
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    networks:
+      microservice_network:
+        aliases:
+          - eureka-server
+
+
+  nextgen-api-gateway:
+    image: 'nextgen.zuul/nextgen-api-gateway:1.0.0'
+    restart: always
+#    volumes:
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/logs:/logs:rw
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/content:/opt/heritage-supporting-docs:rw
+    ports:
+      # both ports must match the port from external_url above
+      - "5100:5100"
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    networks:
+      microservice_network:
+        aliases:
+          - api-gateway
+
+  nextgen-crm-project:
+    image: 'nextgen.crm/nextgen-crm-project:1.0.0'
+    restart: always
+#    volumes:
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/logs:/logs:rw
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/content:/opt/heritage-supporting-docs:rw
+    ports:
+      # both ports must match the port from external_url above
+      - "5200:5200"
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    networks:
+      microservice_network:
+
+
+  nextgen-crm-task:
+    image: 'nextgen.crm/nextgen-crm-task:1.0.0'
+    restart: always
+#    volumes:
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/logs:/logs:rw
+#      - /opt/workspace/nerdcode/docker/data/heritage-data/content:/opt/heritage-supporting-docs:rw
+    ports:
+      # both ports must match the port from external_url above
+      - "5300:5300"
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    networks:
+      microservice_network:
+
+networks:
+  microservice_network:
+    ipam:
+      driver: default
